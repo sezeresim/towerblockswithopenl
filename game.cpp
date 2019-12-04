@@ -13,8 +13,13 @@ float corMovingTowerX=0;
 float corMovingTowerSpeed=0.02;
 float corMovingTowerBorder1=15;
 float corMovingTowerBorder2=-15;
-
-bool startGame=0;
+//Translate Screen
+bool windowStart=false;
+float windowY=-21;
+float windowSpeed=0.05;
+float timeWindow=0;
+//
+bool startGame=false;
 
 void init()
 {
@@ -45,7 +50,7 @@ void drawSky(){
 
 }
 void drawMenu(){
-    glColor3f(0,0.0,0);
+    glColor3f(1,1,1);
     	glBegin(GL_QUADS);
 		glVertex3f(100.0, 0.0, corZ);
 		glVertex3f(100.0,100.0, corZ);
@@ -74,7 +79,7 @@ void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    glTranslatef(0,-21,0);
+    glTranslatef(0,windowY,0);
     if(startGame){
         drawMovingTower();
         drawTower();
@@ -107,8 +112,21 @@ int main(int argc, char* args[])
                 break;
 
                 case SDL_KEYDOWN:
-                    if(myevent.key.keysym.sym==SDLK_SPACE){
+                    if(myevent.key.keysym.sym==SDLK_ESCAPE){
                         (startGame)?startGame=false:startGame=true;
+                        corMovingTowerX=0;
+                        corMovingTowerSpeed=0.02;
+                        corMovingTowerBorder1=15;
+                         corMovingTowerBorder2=-15;
+                        //Translate Screen
+                        windowStart=false;
+                         windowY=-21;
+                         windowSpeed=0.05;
+                       timeWindow=0;
+                    }
+                    if(myevent.key.keysym.sym==SDLK_SPACE){
+                        windowStart?windowStart=false:windowStart=true;
+                        timeWindow=0;
                     }
                 break;
             }
@@ -124,6 +142,11 @@ int main(int argc, char* args[])
             }
             if(corMovingTowerX<corMovingTowerBorder2){
                 corMovingTowerSpeed=corMovingTowerSpeed*hit;
+            }
+
+            if(windowStart && timeWindow<=21){
+                windowY=windowY-windowSpeed;
+                timeWindow=timeWindow+windowSpeed;
             }
         }
 
