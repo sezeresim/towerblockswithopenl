@@ -6,19 +6,13 @@
 #include <string.h>
 
 #define M_PI 3.14159265358979323846
-#define L 1 //length of the pendulum
-#define g 9.8  //gravity const
-
 
 float corZ=-50;
-double theta = 0; // initial value for angle
-double omega = 0.2; // initial value for angular speed
-double time = 0; // initial time
-double dt = 0.01; // time step
 
-double thetaMax = omega*omega*L/(2*g);
-
-
+float corMovingTowerX=0;
+float corMovingTowerSpeed=0.02;
+float corMovingTowerBorder1=15;
+float corMovingTowerBorder2=-15;
 void init()
 {
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -50,10 +44,17 @@ void drawSky(){
 void drawMovingTower(){
         glColor3f(1.0,0.0,1);
     	glBegin(GL_QUADS);
-		glVertex3f(5.0, 25.0, corZ);
-		glVertex3f(-5.0,25.0, corZ);
-		glVertex3f(-5.0,35.0, corZ);
-		glVertex3f(5.0,35.0, corZ);
+		glVertex3f(corMovingTowerX+5.0, 25.0, corZ);
+		glVertex3f(corMovingTowerX-5.0,25.0, corZ);
+		glVertex3f(corMovingTowerX-5.0,35.0, corZ);
+		glVertex3f(corMovingTowerX+5.0,35.0, corZ);
+        glEnd();
+        glColor3f(0,0,0);
+        glBegin(GL_QUADS);
+        glVertex3f(corMovingTowerX+0.5,35.0, corZ);
+        glVertex3f(corMovingTowerX-0.5,35.0, corZ);
+        glVertex3f(0,100,corZ);
+        glVertex3f(0,100,corZ);
         glEnd();
 }
 
@@ -97,6 +98,17 @@ int main(int argc, char* args[])
         theta = thetaMax * sin(omega*time);
         printf("theta=%f, omega=%f, time=%f, and thetaMax=%f\n", theta, omega, time, thetaMax);
         }*/
+        int hit=-1;
+        if(1){
+            corMovingTowerX=corMovingTowerSpeed+corMovingTowerX;
+        }
+        if(corMovingTowerX>corMovingTowerBorder1){
+            corMovingTowerSpeed=corMovingTowerSpeed*hit;
+        }
+        if(corMovingTowerX<corMovingTowerBorder2){
+            corMovingTowerSpeed=corMovingTowerSpeed*hit;
+        }
+
         display();
         SDL_GL_SwapBuffers();
     }
