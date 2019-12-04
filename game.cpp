@@ -4,23 +4,20 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
-#include <GL/freeglut.h>
 
 #define M_PI 3.14159265358979323846
+#define L 1 //length of the pendulum
+#define g 9.8  //gravity const
+
 
 float corZ=-50;
+double theta = 0; // initial value for angle
+double omega = 0.2; // initial value for angular speed
+double time = 0; // initial time
+double dt = 0.01; // time step
 
-void output(int x, int y, float r, float g, float b, char *string)
-{
-  glColor3f( r, g, b );
-  glRasterPos2f(x, y);
-  int len, i;
-  len = (int)strlen(string);
-  for (i = 0; i < len; i++) {
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, string[i]);
-  }
-}
+double thetaMax = omega*omega*L/(2*g);
+
 
 void init()
 {
@@ -50,18 +47,26 @@ void drawSky(){
         glEnd();
 
 }
-
+void drawMovingTower(){
+        glColor3f(1.0,0.0,1);
+    	glBegin(GL_QUADS);
+		glVertex3f(5.0, 25.0, corZ);
+		glVertex3f(-5.0,25.0, corZ);
+		glVertex3f(-5.0,35.0, corZ);
+		glVertex3f(5.0,35.0, corZ);
+        glEnd();
+}
 
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     glTranslatef(0,-21,0);
+    drawMovingTower();
     drawTower();
     drawSky();
-    char sezer[10]="sezer";
-    output(200,200,1,1,1,sezer);
 }
+
 
 
 int main(int argc, char* args[])
@@ -87,7 +92,11 @@ int main(int argc, char* args[])
                 break;
             }
         }
-
+        /*while (theta < thetaMax) {
+        time = time + dt;
+        theta = thetaMax * sin(omega*time);
+        printf("theta=%f, omega=%f, time=%f, and thetaMax=%f\n", theta, omega, time, thetaMax);
+        }*/
         display();
         SDL_GL_SwapBuffers();
     }
