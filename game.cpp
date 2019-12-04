@@ -13,6 +13,9 @@ float corMovingTowerX=0;
 float corMovingTowerSpeed=0.02;
 float corMovingTowerBorder1=15;
 float corMovingTowerBorder2=-15;
+
+bool startGame=0;
+
 void init()
 {
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -41,6 +44,15 @@ void drawSky(){
         glEnd();
 
 }
+void drawMenu(){
+    glColor3f(0,0.0,0);
+    	glBegin(GL_QUADS);
+		glVertex3f(100.0, 0.0, corZ);
+		glVertex3f(100.0,100.0, corZ);
+		glVertex3f(-100.0,100.0, corZ);
+		glVertex3f(-100.0,0.0, corZ);
+        glEnd();
+}
 void drawMovingTower(){
         glColor3f(1.0,0.0,1);
     	glBegin(GL_QUADS);
@@ -63,9 +75,14 @@ void display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     glTranslatef(0,-21,0);
-    drawMovingTower();
-    drawTower();
-    drawSky();
+    if(startGame){
+        drawMovingTower();
+        drawTower();
+        drawSky();
+    }else{
+        drawMenu();
+    }
+
 }
 
 
@@ -90,24 +107,26 @@ int main(int argc, char* args[])
                 break;
 
                 case SDL_KEYDOWN:
+                    if(myevent.key.keysym.sym==SDLK_SPACE){
+                        (startGame)?startGame=false:startGame=true;
+                    }
                 break;
             }
         }
-        /*while (theta < thetaMax) {
-        time = time + dt;
-        theta = thetaMax * sin(omega*time);
-        printf("theta=%f, omega=%f, time=%f, and thetaMax=%f\n", theta, omega, time, thetaMax);
-        }*/
-        int hit=-1;
-        if(1){
-            corMovingTowerX=corMovingTowerSpeed+corMovingTowerX;
+
+        if(startGame){
+            int hit=-1;
+            if(1){
+                corMovingTowerX=corMovingTowerSpeed+corMovingTowerX;
+            }
+            if(corMovingTowerX>corMovingTowerBorder1){
+                corMovingTowerSpeed=corMovingTowerSpeed*hit;
+            }
+            if(corMovingTowerX<corMovingTowerBorder2){
+                corMovingTowerSpeed=corMovingTowerSpeed*hit;
+            }
         }
-        if(corMovingTowerX>corMovingTowerBorder1){
-            corMovingTowerSpeed=corMovingTowerSpeed*hit;
-        }
-        if(corMovingTowerX<corMovingTowerBorder2){
-            corMovingTowerSpeed=corMovingTowerSpeed*hit;
-        }
+
 
         display();
         SDL_GL_SwapBuffers();
