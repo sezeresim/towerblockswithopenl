@@ -78,17 +78,28 @@ void drawSky(){
 
 }
 void drawMenu(){
-    glColor3f(1,1,1);
+        glColor3f(1,1,1);
     	glBegin(GL_QUADS);
 		glVertex3f(100.0, 0.0, corZ);
 		glVertex3f(100.0,100.0, corZ);
 		glVertex3f(-100.0,100.0, corZ);
 		glVertex3f(-100.0,0.0, corZ);
         glEnd();
-        std::string text;
-         text = "This is a simple text.";
-         glColor3f(0, 1, 0);
-         drawText(text.data(), text.size(), 50, 200);
+
+        std::string textStartGame;
+        textStartGame = "Start Game";
+        glColor3f(0, 0, 0);
+        drawText(textStartGame.data(), textStartGame.size(), 360, 380);
+
+        std::string textBestScores;
+        textBestScores = "Best Score";
+        glColor3f(0, 0, 0);
+        drawText(textBestScores.data(),textBestScores.size(),358,320);
+
+        std::string textAboutUs;
+        textAboutUs = "About US";
+        glColor3f(0, 0, 0);
+        drawText(textAboutUs.data(),textAboutUs.size(),365,260);
 
 }
 void drawMovingTower(){
