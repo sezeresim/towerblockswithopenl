@@ -1,11 +1,17 @@
 #include <SDL/SDL.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <math.h>
+#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#include <iostream>
+#include <Windows.h>
+
+#include <gl\GL.h>
+#include <gl\GLU.h>
+#include <GL/glut.h>
+#include <math.h>
+#include <cstring>
 
 #define M_PI 3.14159265358979323846
+
 
 float corZ=-50;
 
@@ -29,6 +35,28 @@ void init()
     gluPerspective(45,640.0/480.0,1.0,500.0);
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
+}
+/*
+ Drawing text 2D screen.
+*/
+void drawText(const char *text, int length, int x, int y){
+ glMatrixMode(GL_PROJECTION); // change the current matrix to PROJECTION
+ double matrix[16]; // allocate 16-byte in memory (thanks to BlueByteGames about memory-leak warning comment on YouTube)
+ glGetDoublev(GL_PROJECTION_MATRIX, matrix); // get the values from PROJECTION matrix to local variable
+ glLoadIdentity(); // reset PROJECTION matrix to identity matrix
+ glOrtho(0, 800, 0, 600, -5, 5); // orthographic perspective
+ glMatrixMode(GL_MODELVIEW); // change current matrix to MODELVIDE matrix again
+ glLoadIdentity(); // reset it to identity matrix
+ glPushMatrix(); // push current state of MODELVIEW matrix to stack
+ glLoadIdentity(); // reset it again. (may not be required, but it my convention
+ glRasterPos2i(x, y); // raster position in 2D
+ for(int i=0; i<length; i++){
+  glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]); // generation of characters in our text with 9 by 15 GLU font
+ }
+ glPopMatrix(); // get MODELVIEW matrix value from stack
+ glMatrixMode(GL_PROJECTION); // change current matrix mode to PROJECTION
+ glLoadMatrixd(matrix); // reset
+ glMatrixMode(GL_MODELVIEW); // change current matrix mode to MODELVIEW
 }
 void drawTower(){
     glColor3f(0.0,0.0,1);
@@ -57,6 +85,11 @@ void drawMenu(){
 		glVertex3f(-100.0,100.0, corZ);
 		glVertex3f(-100.0,0.0, corZ);
         glEnd();
+        std::string text;
+         text = "This is a simple text.";
+         glColor3f(0, 1, 0);
+         drawText(text.data(), text.size(), 50, 200);
+
 }
 void drawMovingTower(){
         glColor3f(1.0,0.0,1);
@@ -86,6 +119,7 @@ void display()
         drawSky();
     }else{
         drawMenu();
+
     }
 
 }
