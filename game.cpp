@@ -25,10 +25,10 @@ float windowY=-21;
 float windowSpeed=0.05;
 float timeWindow=0;
 
-//chosescreen
+//choosescreen
 int  activeScreen=1;
 //menu
-int activeButton=3;
+int activeButton=1;
 //initials
 void init()
 {
@@ -116,14 +116,6 @@ void drawMenu(){
                     glVertex3f(-10.0,21.0, corZ);
                     glVertex3f(-10.0,25.0, corZ);
                     glEnd();
-                }else if(activeButton==3){
-                    glColor3f(1,0,1);
-                    glBegin(GL_QUADS);
-                    glVertex3f(10.0, 21.0, corZ);
-                    glVertex3f(10.0,17.0, corZ);
-                    glVertex3f(-10.0,17.0, corZ);
-                    glVertex3f(-10.0,21.0, corZ);
-                    glEnd();
                 }
 
         glColor3f(0,1,1);
@@ -145,11 +137,19 @@ void drawMenu(){
         glColor3f(0, 0, 0);
         drawText(textBestScores.data(),textBestScores.size(),358,320);
 
-        std::string textAboutUs;
-        textAboutUs = "About US";
+}
+void drawBestScore(){
+     glColor3f(1,0,1);
+    	glBegin(GL_QUADS);
+		glVertex3f(100.0, 0.0, corZ);
+		glVertex3f(100.0,100.0, corZ);
+		glVertex3f(-100.0,100.0, corZ);
+		glVertex3f(-100.0,0.0, corZ);
+        glEnd();
+         std::string bestScore;
+        bestScore = "Best Score";
         glColor3f(0, 0, 0);
-        drawText(textAboutUs.data(),textAboutUs.size(),365,260);
-
+        drawText(bestScore.data(),bestScore.size(),358,320);
 }
 void display()
 {
@@ -162,6 +162,8 @@ void display()
             drawMenu();
         case 2:
             drawGame();
+        case 3:
+            drawBestScore();
     }
 }
 
@@ -194,9 +196,13 @@ int main(int argc, char* args[])
                                 }
                             }
                             if(myevent.key.keysym.sym==SDLK_DOWN){
-                                if(activeButton!=3){
+                                if(activeButton!=2){
                                     activeButton++;
                                 }
+                            }
+                            if(myevent.key.keysym.sym==SDLK_KP_ENTER){
+                                    activeScreen=activeButton+1;
+
                             }
 
                         case 2:
@@ -215,7 +221,10 @@ int main(int argc, char* args[])
                                 windowStart?windowStart=false:windowStart=true;
                                 timeWindow=0;
                             }
-
+                        case 3:
+                            if(myevent.key.keysym.sym==SDLK_ESCAPE){
+                                activeScreen=1;
+                            }
                     }
 
                 break;
