@@ -30,15 +30,13 @@ int  activeScreen=1;
 //menu
 int activeButton=1;
 //initials
-void init()
-{
+void init(){
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45,640.0/480.0,1.0,500.0);
     glMatrixMode(GL_MODELVIEW);
-    glEnable(GL_DEPTH_TEST);
-}
+    glEnable(GL_DEPTH_TEST);}
  //Drawing text 2D screen.
 void drawText(const char *text, int length, int x, int y){
      glMatrixMode(GL_PROJECTION); // change the current matrix to PROJECTION
@@ -94,6 +92,21 @@ void drawMovingTower(){
         glVertex3f(0,100,corZ);
         glEnd();
 }
+void drawBestScore(){
+     glColor3f(1,0,1);
+    	glBegin(GL_QUADS);
+		glVertex3f(100.0, 0.0, corZ);
+		glVertex3f(100.0,100.0, corZ);
+		glVertex3f(-100.0,100.0, corZ);
+		glVertex3f(-100.0,0.0, corZ);
+        glEnd();
+        if(activeScreen==3){
+            std::string bestScore;
+            bestScore = "Best Score";
+            glColor3f(0, 0, 0);
+            drawText(bestScore.data(),bestScore.size(),358,320);
+        }
+}
 void drawGame(){
     drawMovingTower();
     drawTower();
@@ -138,19 +151,7 @@ void drawMenu(){
         drawText(textBestScores.data(),textBestScores.size(),358,320);
 
 }
-void drawBestScore(){
-     glColor3f(1,0,1);
-    	glBegin(GL_QUADS);
-		glVertex3f(100.0, 0.0, corZ);
-		glVertex3f(100.0,100.0, corZ);
-		glVertex3f(-100.0,100.0, corZ);
-		glVertex3f(-100.0,0.0, corZ);
-        glEnd();
-         std::string bestScore;
-        bestScore = "Best Score";
-        glColor3f(0, 0, 0);
-        drawText(bestScore.data(),bestScore.size(),358,320);
-}
+
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -225,6 +226,7 @@ int main(int argc, char* args[])
                             if(myevent.key.keysym.sym==SDLK_ESCAPE){
                                 activeScreen=1;
                             }
+
                     }
 
                 break;
@@ -242,7 +244,6 @@ int main(int argc, char* args[])
             if(corMovingTowerX<corMovingTowerBorder2){
                 corMovingTowerSpeed=corMovingTowerSpeed*hit;
             }
-
             if(windowStart && timeWindow<=21){
                 windowY=windowY-windowSpeed;
                 timeWindow=timeWindow+windowSpeed;
