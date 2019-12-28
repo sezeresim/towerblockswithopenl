@@ -21,7 +21,6 @@ float corMovingTowerBorder1=15;
 float corMovingTowerBorder2=-15;
 //Translate Screen
 bool windowStart=false;
-float windowY=-21;
 float windowSpeed=0.05;
 float timeWindow=0;
 
@@ -76,20 +75,37 @@ void drawSky(){
         glEnd();
 
 }
-void drawMovingTower(){
-        glColor3f(1.0,0.0,1);
-    	glBegin(GL_QUADS);
-		glVertex3f(corMovingTowerX+5.0, 25.0, corZ);
-		glVertex3f(corMovingTowerX-5.0,25.0, corZ);
-		glVertex3f(corMovingTowerX-5.0,35.0, corZ);
-		glVertex3f(corMovingTowerX+5.0,35.0, corZ);
+void drawHook(){
+        glColor3f(0,0,0);
+        glBegin(GL_QUADS);
+        glVertex3f(corMovingTowerX,38.0, corZ);
+        glVertex3f(corMovingTowerX,38.0, corZ);
+        glVertex3f(10,100,corZ);
+        glVertex3f(-10,100,corZ);
         glEnd();
         glColor3f(0,0,0);
         glBegin(GL_QUADS);
-        glVertex3f(corMovingTowerX+0.5,35.0, corZ);
-        glVertex3f(corMovingTowerX-0.5,35.0, corZ);
-        glVertex3f(0,100,corZ);
-        glVertex3f(0,100,corZ);
+        glVertex3f(corMovingTowerX,38.0, corZ);
+        glVertex3f(corMovingTowerX-5.1,35.0, corZ);
+        glVertex3f(corMovingTowerX-5.1,30,corZ);
+        glVertex3f(corMovingTowerX-7,35,corZ);
+        glEnd();
+        glColor3f(0,0,0);
+        glBegin(GL_QUADS);
+        glVertex3f(corMovingTowerX,38.0, corZ);
+        glVertex3f(corMovingTowerX+5.1,35.0, corZ);
+        glVertex3f(corMovingTowerX+5.1,30,corZ);
+        glVertex3f(corMovingTowerX+7,35,corZ);
+        glEnd();
+
+}
+void drawMovingTower(){
+        glColor3f(1.0,0.0,1);
+    	glBegin(GL_QUADS);
+		glVertex3f(corMovingTowerX+5.0,-timeWindow+25.0, corZ);
+		glVertex3f(corMovingTowerX-5.0,-timeWindow+25.0, corZ);
+		glVertex3f(corMovingTowerX-5.0,-timeWindow+35.0, corZ);
+		glVertex3f(corMovingTowerX+5.0,-timeWindow+35.0, corZ);
         glEnd();
 }
 void drawBestScore(){
@@ -108,6 +124,7 @@ void drawBestScore(){
         }
 }
 void drawGame(){
+    drawHook();
     drawMovingTower();
     drawTower();
     drawSky();
@@ -156,7 +173,7 @@ void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    glTranslatef(0,windowY,0);
+    glTranslatef(0,-21,0);
 
     switch(activeScreen){
         case 1:
@@ -180,6 +197,7 @@ int main(int argc, char* args[])
     init();
     while (loop==1)
     {
+        //Keyboard Functions
         while (SDL_PollEvent(&myevent))
         {
             switch(myevent.type)
@@ -201,7 +219,7 @@ int main(int argc, char* args[])
                                     activeButton++;
                                 }
                             }
-                            if(myevent.key.keysym.sym==SDLK_KP_ENTER){
+                            if(myevent.key.keysym.sym==SDLK_RSHIFT){
                                     activeScreen=activeButton+1;
 
                             }
@@ -214,7 +232,6 @@ int main(int argc, char* args[])
                                 corMovingTowerBorder2=-15;
                                 //Translate Screen
                                 windowStart=false;
-                                windowY=-21;
                                 windowSpeed=0.05;
                                 timeWindow=0;
                             }
@@ -232,7 +249,7 @@ int main(int argc, char* args[])
                 break;
             }
         }
-
+        //Screen Function
         if(activeScreen==2){
             int hit=-1;
             if(1){
@@ -244,8 +261,7 @@ int main(int argc, char* args[])
             if(corMovingTowerX<corMovingTowerBorder2){
                 corMovingTowerSpeed=corMovingTowerSpeed*hit;
             }
-            if(windowStart && timeWindow<=21){
-                windowY=windowY-windowSpeed;
+            if(windowStart && timeWindow<=15){
                 timeWindow=timeWindow+windowSpeed;
             }
         }
@@ -253,6 +269,7 @@ int main(int argc, char* args[])
 
         display();
         SDL_GL_SwapBuffers();
+
     }
     SDL_Quit();
     return 0;
