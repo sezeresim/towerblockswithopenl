@@ -7,7 +7,6 @@
 #include <gl\GLU.h>
 #include <GL/glut.h>
 #include <math.h>
-
 #include <string>
 
 #define M_PI 3.14159265358979323846
@@ -15,19 +14,25 @@
 
 float corZ=-50;
 
+//for moving
 float corMovingTowerX=0;
-float corMovingTowerSpeed=0.02;
-float corMovingTowerBorder1=15;
-float corMovingTowerBorder2=-15;
+float corMovingTowerSpeed=0.015;
+float corMovingTowerBorder1=10;
+float corMovingTowerBorder2=-10;
 //Translate Screen
-bool windowStart=false;
 float windowSpeed=0.05;
 float timeWindow=0;
-
+//pushtower
+float corPushTowerX=NULL;
+bool pushState=false;
+bool firstPush=false;
 //choosescreen
 int  activeScreen=1;
 //menu
 int activeButton=1;
+//towers
+int endTower=0;
+int towerArray[][2]={{0,5}};
 //initials
 void init(){
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -56,22 +61,30 @@ void drawText(const char *text, int length, int x, int y){
      glLoadMatrixd(matrix); // reset
      glMatrixMode(GL_MODELVIEW); // change current matrix mode to MODELVIEW
 }
-void drawTower(){
-    glColor3f(0.0,0.0,1);
-    	glBegin(GL_QUADS);
-		glVertex3f(5.0, 0.0, corZ);
-		glVertex3f(-5.0,0.0, corZ);
-		glVertex3f(-5.0,10.0, corZ);
-		glVertex3f(5.0,10.0, corZ);
+void drawTower(int positionOfX,int positionOfY){
+     glColor3f(0.4,0.26,0.13);
+    glBegin(GL_QUADS);
+		glVertex3f(positionOfX+4,positionOfY-4.0, corZ);
+		glVertex3f(positionOfX-4,positionOfY-4.0, corZ);
+		glVertex3f(positionOfX-4,positionOfY+4.0, corZ);
+		glVertex3f(positionOfX+4,positionOfY+4.0, corZ);
         glEnd();
+    glColor3f(0.17,0.1,0.5);
+    	glBegin(GL_QUADS);
+		glVertex3f(positionOfX+5,positionOfY-5.0, corZ);
+		glVertex3f(positionOfX-5,positionOfY-5.0, corZ);
+		glVertex3f(positionOfX-5,positionOfY+5.0, corZ);
+		glVertex3f(positionOfX+5,positionOfY+5.0, corZ);
+        glEnd();
+
 }
 void drawSky(){
  glColor3f(0.0,1.0,1);
     	glBegin(GL_QUADS);
-		glVertex3f(100.0, 0.0, corZ);
+		glVertex3f(100.0, -1000.0, corZ);
 		glVertex3f(100.0,100.0, corZ);
 		glVertex3f(-100.0,100.0, corZ);
-		glVertex3f(-100.0,0.0, corZ);
+		glVertex3f(-100.0,-100.0, corZ);
         glEnd();
 
 }
@@ -97,16 +110,40 @@ void drawHook(){
         glVertex3f(corMovingTowerX+5.1,30,corZ);
         glVertex3f(corMovingTowerX+7,35,corZ);
         glEnd();
-
-}
+        if(!pushState || firstPush){
+              glColor3f(0.4,0.26,0.13);
+            glBegin(GL_QUADS);
+            glVertex3f(corMovingTowerX+4.0,26.0, corZ);
+            glVertex3f(corMovingTowerX-4.0,26.0, corZ);
+            glVertex3f(corMovingTowerX-4.0,34.0, corZ);
+            glVertex3f(corMovingTowerX+4.0,34.0, corZ);
+            glEnd();
+    glColor3f(0.17,0.1,0.5);
+            glBegin(GL_QUADS);
+            glVertex3f(corMovingTowerX+5.0,25.0, corZ);
+            glVertex3f(corMovingTowerX-5.0,25.0, corZ);
+            glVertex3f(corMovingTowerX-5.0,35.0, corZ);
+            glVertex3f(corMovingTowerX+5.0,35.0, corZ);
+            glEnd();}
+    }
 void drawMovingTower(){
-        glColor3f(1.0,0.0,1);
+    if(pushState || firstPush){
+              glColor3f(0.4,0.26,0.13);
     	glBegin(GL_QUADS);
-		glVertex3f(corMovingTowerX+5.0,-timeWindow+25.0, corZ);
-		glVertex3f(corMovingTowerX-5.0,-timeWindow+25.0, corZ);
-		glVertex3f(corMovingTowerX-5.0,-timeWindow+35.0, corZ);
-		glVertex3f(corMovingTowerX+5.0,-timeWindow+35.0, corZ);
+		glVertex3f(corPushTowerX+4.0,-timeWindow+26.0, corZ);
+		glVertex3f(corPushTowerX-4.0,-timeWindow+26.0, corZ);
+		glVertex3f(corPushTowerX-4.0,-timeWindow+34.0, corZ);
+		glVertex3f(corPushTowerX+4.0,-timeWindow+34.0, corZ);
         glEnd();
+    glColor3f(0.17,0.1,0.5);
+    	glBegin(GL_QUADS);
+		glVertex3f(corPushTowerX+5.0,-timeWindow+25.0, corZ);
+		glVertex3f(corPushTowerX-5.0,-timeWindow+25.0, corZ);
+		glVertex3f(corPushTowerX-5.0,-timeWindow+35.0, corZ);
+		glVertex3f(corPushTowerX+5.0,-timeWindow+35.0, corZ);
+        glEnd();
+}
+
 }
 void drawBestScore(){
      glColor3f(1,0,1);
@@ -126,7 +163,10 @@ void drawBestScore(){
 void drawGame(){
     drawHook();
     drawMovingTower();
-    drawTower();
+    for(int i=0;i<=endTower;i++){
+            drawTower(towerArray[i][0],towerArray[i][1]);
+
+    }
     drawSky();
 }
 void drawMenu(){
@@ -231,13 +271,23 @@ int main(int argc, char* args[])
                                 corMovingTowerBorder1=15;
                                 corMovingTowerBorder2=-15;
                                 //Translate Screen
-                                windowStart=false;
-                                windowSpeed=0.05;
                                 timeWindow=0;
                             }
                             if(myevent.key.keysym.sym==SDLK_SPACE){
-                                windowStart?windowStart=false:windowStart=true;
+                                firstPush=true;
                                 timeWindow=0;
+                                corPushTowerX=corMovingTowerX;
+                                pushState?pushState=false:pushState=true;
+                                endTower++;
+                                towerArray[endTower+1][0]=corPushTowerX;
+                                towerArray[endTower+1][1]=15;
+                                if(endTower>1){
+                                     for(int i=0;i<=endTower;i++){
+                                    towerArray[i][1]=towerArray[i][1]-10;}
+                                }
+
+
+
                             }
                         case 3:
                             if(myevent.key.keysym.sym==SDLK_ESCAPE){
@@ -261,7 +311,8 @@ int main(int argc, char* args[])
             if(corMovingTowerX<corMovingTowerBorder2){
                 corMovingTowerSpeed=corMovingTowerSpeed*hit;
             }
-            if(windowStart && timeWindow<=15){
+
+            if(firstPush==true && timeWindow<=15){
                 timeWindow=timeWindow+windowSpeed;
             }
         }
